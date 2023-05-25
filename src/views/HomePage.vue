@@ -8,6 +8,7 @@
     <ion-content>
       <ion-grid>
         <ion-row class="ion-margin-bottom">
+          <card-carousel />
           <ion-col>
             <ion-item>
               <ion-label position="floating">Categorías</ion-label>
@@ -80,95 +81,96 @@
       </ion-modal>
 
       <!-- Modal for updating a product -->
-     
-<!-- Modal for updating a product -->
-<ion-modal :is-open="dialogoActualizar" @ionModalDidDismiss="dialogoActualizar = false">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title color>Actualizar Producto</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <ion-content>
-    <ion-list>
-      <ion-item>
-        <ion-label position="floating">ID</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.id" readonly></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Nombre</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.nombre"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Categoría</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.categoria"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Resumen</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.resumen"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Descripción</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.descripcion"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Imagen</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.imagenArchivo"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Precio</ion-label>
-        <ion-input type="text" v-model="productoParaActualizar.precio"></ion-input>
-      </ion-item>
-    </ion-list>
+      <!-- Modal for updating a product -->
+      <ion-modal :is-open="dialogoActualizar" @ionModalDidDismiss="dialogoActualizar = false">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title color>Actualizar Producto</ion-title>
+          </ion-toolbar>
+        </ion-header>
 
-    <ion-button expand="full" color="primary" @click="actualizarProducto(productoParaActualizar)">Actualizar</ion-button>
-    <ion-button expand="full" color="light" @click="dialogoActualizar = false">Cerrar</ion-button>
-  </ion-content>
-</ion-modal>
-<!-- Modal for creating a product -->
-<ion-modal :is-open="dialogoCrear" @ionModalDidDismiss="dialogoCrear = false">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Crear Producto</ion-title>
-    </ion-toolbar>
-  </ion-header>
+        <ion-content>
+          <ion-list>
+            <ion-item>
+              <ion-label position="floating">ID</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.id" readonly></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Nombre</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.nombre"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Categoría</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.categoria"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Resumen</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.resumen"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Descripción</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Imagen</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.imagenArchivo"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Precio</ion-label>
+              <ion-input type="text" v-model="productoParaActualizar.precio"></ion-input>
+            </ion-item>
+          </ion-list>
 
-  <ion-content>
-    <ion-list>
-      <ion-item>
-        <ion-label position="floating">Nombre</ion-label>
-        <ion-input type="text" v-model="nuevoProducto.nombre"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Categoría</ion-label>
-        <ion-input type="text" v-model="nuevoProducto.categoria"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Resumen</ion-label>
-        <ion-input type="text" v-model="nuevoProducto.resumen"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Descripción</ion-label>
-        <ion-input type="text" v-model="nuevoProducto.descripcion"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Imagen</ion-label>
-        <ion-input type="text" v-model="nuevoProducto.imagenArchivo"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Precio</ion-label>
-        <ion-input type="text" v-model="nuevoProducto.precio"></ion-input>
-      </ion-item>
-    </ion-list>
+          <ion-button expand="full" color="primary"
+            @click="actualizarProducto(productoParaActualizar)">Actualizar</ion-button>
+          <ion-button expand="full" color="light" @click="dialogoActualizar = false">Cerrar</ion-button>
+        </ion-content>
+      </ion-modal>
+      <!-- Modal for creating a product -->
+      <ion-modal :is-open="dialogoCrear" @ionModalDidDismiss="dialogoCrear = false">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Crear Producto</ion-title>
+          </ion-toolbar>
+        </ion-header>
 
-    <ion-button expand="full" color="success" @click="crearProducto">Crear</ion-button>
-    <ion-button expand="full" color="light" @click="dialogoCrear = false">Cerrar</ion-button>
-  </ion-content>
-</ion-modal>
+        <ion-content>
+          <ion-list>
+            <ion-item>
+              <ion-label position="floating">Nombre</ion-label>
+              <ion-input type="text" v-model="nuevoProducto.nombre"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Categoría</ion-label>
+              <ion-input type="text" v-model="nuevoProducto.categoria"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Resumen</ion-label>
+              <ion-input type="text" v-model="nuevoProducto.resumen"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Descripción</ion-label>
+              <ion-input type="text" v-model="nuevoProducto.descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Imagen</ion-label>
+              <ion-input type="text" v-model="nuevoProducto.imagenArchivo"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Precio</ion-label>
+              <ion-input type="text" v-model="nuevoProducto.precio"></ion-input>
+            </ion-item>
+          </ion-list>
+
+          <ion-button expand="full" color="success" @click="crearProducto">Crear</ion-button>
+          <ion-button expand="full" color="light" @click="dialogoCrear = false">Cerrar</ion-button>
+        </ion-content>
+      </ion-modal>
 
       <!-- Modal for deleting a product -->
       <ion-modal :is-open="dialogoEliminar" @ionModalDidDismiss="dialogoEliminar = false">
-     
+
         <ion-button color="danger" @click="borrarProducto">Eliminar</ion-button>
         <ion-button color="primary" @click="dialogoEliminar = false">Cerrar</ion-button>
       </ion-modal>
@@ -184,6 +186,7 @@
 <script>
 import { IonContent, IonModal, IonHeader, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonFooter, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonItem, IonLabel, IonInput, IonImg, IonAlert, IonList, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/vue';
 import axios from 'axios';
+import CardCarousel from '../components/cardCarousel.vue';
 
 export default {
   components: {
@@ -211,7 +214,8 @@ export default {
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
-    IonModal
+    IonModal,
+    CardCarousel
   },
   data() {
     return {
@@ -309,9 +313,9 @@ export default {
       this.dialogoEliminar = true;
     },
     prepararActualizar(producto) {
-            this.productoParaActualizar = { ...producto };
-            this.dialogoActualizar = true;
-        },
+      this.productoParaActualizar = { ...producto };
+      this.dialogoActualizar = true;
+    },
     async borrarProducto() {
       try {
         if (this.productoParaBorrar) {
@@ -422,5 +426,4 @@ export default {
 .ion-title {
   --color: #ffffff;
 }
-
 </style>
