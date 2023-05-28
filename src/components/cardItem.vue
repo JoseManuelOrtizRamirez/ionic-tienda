@@ -1,5 +1,5 @@
 <template>
-    <ion-card class="card">
+    <ion-card @click="this.$router.push({ path: '/update' })" class="card">
         <font-awesome-icon @click="handleDelete(product.id)" class="card-icon" :icon="['fa', 'trash']" />
         <img :src="product.imagenArchivo" />
         <ion-card-header class="card-header">

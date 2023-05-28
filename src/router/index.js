@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import HomePage from '../views/HomePage.vue'
 import Search from '../views/Search.vue'
 import Create from '../views/CreatePage.vue'
+import Update from '../views/UpdatePage.vue'
 
 const routes = [
   {
@@ -22,6 +23,11 @@ const routes = [
     path: '/create',
     name: 'Create',
     component: Create
+  },
+  {
+    path: '/update',
+    name: 'Update',
+    component: Update
   }
 ]
 
