@@ -1,14 +1,44 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title class="ion-text-center">Administrar Productos</ion-title>
-      </ion-toolbar>
-    </ion-header>
     <ion-content>
       <ion-grid>
-        <ion-row class="ion-margin-bottom">
-          <card-carousel />
+        <ion-row class="menu-section">
+          <div class="float-menu">
+            <ion-row>
+              <ion-col push-lg="0" class="menu-item">
+                <p @click="this.$router.push({ path: '/home' })" class="menu-title">
+                  TiendaServiciosApp
+                </p>
+              </ion-col>
+              <ion-col size="auto" push-lg="3" class="menu-item">
+                <font-awesome-icon @click="this.$router.push({ path: '/home' })" class="menu-icon"
+                  :icon="['fas', 'house']" />Home
+              </ion-col>
+              <ion-col size="auto" push-lg="4" class="menu-item">
+                <font-awesome-icon @click="this.$router.push({ path: '/create' })" class="menu-icon"
+                  :icon="['fas', 'plus-circle']" /> Crear
+              </ion-col>
+              <ion-col size="auto" push-lg="5" class="menu-item">
+                <ion-select interface="action-sheet" @ion-cancel="categoriasSeleccionadas = categorias"
+                  @ionChange="filter($event.target.value)" class="menu-label-selector" aria-label="Fruit"
+                  placeholder="Filtrar por categoria">
+                  <ion-select-option v-for="categoria in categorias" :value="categoria">{{ categoria
+                  }}</ion-select-option>
+                </ion-select>
+              </ion-col>
+              <ion-col size="auto" push-lg="6" class="menu-item">
+                <input v-model="nameFilter" class="menu-search-input" /><font-awesome-icon @click="filterByName"
+                  class="menu-icon" :icon="['fas', 'search']" />
+              </ion-col>
+            </ion-row>
+          </div>
+        </ion-row>
+        <ion-row class="content">
+          <h3>Administración de productos</h3>
+        </ion-row>
+        <ion-row v-for="categoria, index in categoriasSeleccionadas" class="ion-margin-bottom">
+          <card-carousel :products="productos.filter(p => p.categoria == categoria)" :handleDelete="handleDelete"
+            :id="index" :category="categoria" />
         </ion-row>
       </ion-grid>
     </ion-content>
@@ -16,7 +46,7 @@
 </template>
 
 <script>
-import { IonContent, IonModal, IonHeader, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonFooter, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonItem, IonLabel, IonInput, IonImg, IonAlert, IonList, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/vue';
+import { IonContent, IonSelect, IonSelectOption, IonModal, IonHeader, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonFooter, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonItem, IonLabel, IonInput, IonImg, IonAlert, IonList, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/vue';
 import axios from 'axios';
 import CardCarousel from '../components/cardCarousel.vue';
 
@@ -47,15 +77,20 @@ export default {
     IonItemOptions,
     IonItemOption,
     IonModal,
-    CardCarousel
+    CardCarousel,
+    IonSelect,
+    IonSelectOption
   },
   data() {
     return {
       productos: [],
+      categorias: [],
+      categoriasSeleccionadas: [],
       dialogoEliminar: false,
       dialogoCrear: false,
       productoParaBorrar: null,
       idSeleccionado: null,
+      nameFilter: "",
       nuevoProducto: {
         nombre: '',
         categoria: '',
@@ -84,23 +119,33 @@ export default {
   created() {
     this.obtenerProductos();
   },
+  mounted() {
+    this.emitter.on('create-event', () => {
+      this.obtenerProductos();
+    })
+  },
+  beforeDestroy() {
+    eventBus.$off('create-event')
+  },
   methods: {
+    filter(value) {
+      this.categoriasSeleccionadas = [value];
+    },
     async obtenerProductos() {
       try {
-        const respuesta = await axios.get('https://localhost:44308/api/Catalog', {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
+        fetch(`${import.meta.env.VITE_API}/Catalog`).then(res => res.json()).then(res => {
+          const categories = res.map(r => (r.categoria));
+          this.categorias = [...new Set(categories)];
+          this.categoriasSeleccionadas = this.categorias;
+          this.productos = res;
         });
-        this.productos = respuesta.data;
       } catch (error) {
         console.error('Error al obtener los productos:', error);
       }
     },
     async obtenerProductoPorId(id) {
       try {
-        const respuesta = await axios.get(`https://localhost:44308/api/Catalog/${id}`, {
+        const respuesta = await axios.get(`${import.meta.env.VITE_API}/Catalog/${id}`, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -114,7 +159,7 @@ export default {
     },
     async obtenerProductosPorCategoria(categoria) {
       try {
-        const respuesta = await axios.get(`https://localhost:44308/api/Catalog/GetProductByCategory/${categoria}`, {
+        const respuesta = await axios.get(`${import.meta.env.VITE_API}/Catalog/GetProductByCategory/${categoria}`, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -128,7 +173,7 @@ export default {
     },
     async actualizarProducto(producto) {
       try {
-        await axios.put('https://localhost:44308/api/Catalog', producto, {
+        await axios.put(`${import.meta.env.VITE_API}/Catalog`, producto, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -148,46 +193,99 @@ export default {
       this.productoParaActualizar = { ...producto };
       this.dialogoActualizar = true;
     },
-    async borrarProducto() {
-      try {
-        if (this.productoParaBorrar) {
-          await axios.delete(`https://localhost:44308/api/Catalog/${this.productoParaBorrar.id}`, {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-          });
-          this.productoParaBorrar = null;
-          this.obtenerProductos();
-          this.dialogoEliminar = false;
-        }
-      } catch (error) {
-        console.error('Error al eliminar el producto:', error);
-      }
+    handleDelete(id) {
+      this.$swal.fire({
+        title: 'Advertencia',
+        text: '¿Deseas eliminar del stock al producto?',
+        icon: 'warning',
+        heightAuto: false,
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#D44840'
+      }).then(res => {
+        if (res.isConfirmed)
+          this.borrarProducto(id);
+      });
+
     },
-    async crearProducto() {
+    async borrarProducto(id) {
       try {
-        await axios.post('https://localhost:44308/api/Catalog', this.nuevoProducto, {
+        await axios.delete(`${import.meta.env.VITE_API}/Catalog/${id}`, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
         });
-        this.dialogoCrear = false;
-        this.obtenerProductos();
-        this.nuevoProducto = {
-          nombre: '',
-          categoria: '',
-          resumen: '',
-          descripcion: '',
-          imagenArchivo: '',
-          precio: '',
-        };
+
+        this.productos = this.productos.filter(p => p.id != id);
+
+        this.$swal.fire({
+          title: 'Éxito',
+          text: 'El producto ha sido eliminado',
+          icon: 'success',
+          heightAuto: false,
+          toast: true,
+          position: 'bottom-right',
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       } catch (error) {
-        console.error('Error al crear el producto:', error);
+        console.error('Error al eliminar el producto:', error);
+        this.$swal.fire({
+          title: 'Error',
+          text: 'Algo salió mal, no se guardaron los cambios',
+          icon: 'error',
+          heightAuto: false,
+          toast: true,
+          position: 'bottom-right',
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       }
     },
-  },
+    async filterByName() {
+      try {
+        const respuesta = await axios.get(`${import.meta.env.VITE_API}/Catalog/ByName/${this.nameFilter}`, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+        if (respuesta.data.length > 0) {
+          this.productos = respuesta.data;
+          this.categoriasSeleccionadas = [respuesta.data[0].categoria];
+        } else {
+          this.$swal.fire({
+            title: 'Error',
+            text: 'Producto no encontrado',
+            icon: 'warning',
+            heightAuto: false,
+            toast: true,
+            position: 'bottom-right',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
+        }
+      } catch (error) {
+        console.error('Error al obtener el producto por nombre:', error);
+        this.$swal.fire({
+          title: 'Error',
+          text: 'Algo salió mal',
+          icon: 'error',
+          heightAuto: false,
+          toast: true,
+          position: 'bottom-right',
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+      }
+    }
+  }
 };
 </script>
 
@@ -218,6 +316,11 @@ export default {
 
 .ion-color-primary {
   --ion-color-base: var(--ion-color-primary);
+}
+
+body,
+html {
+  background-color: #ebebeb;
 }
 
 /* New styles for transitions, hover effects, and minimalism */
@@ -257,5 +360,68 @@ export default {
 
 .ion-title {
   --color: #ffffff;
+}
+
+.float-menu {
+  position: fixed;
+  top: 20px;
+  margin-left: 15px;
+  background-color: #2d2b4e;
+  border: 1px solid #2d2b4e;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  width: 95%;
+  border-radius: 30px;
+  height: 4rem;
+  display: flex;
+  z-index: 5;
+}
+
+.menu-title {
+  color: white;
+  margin-left: 1rem;
+  font-size: 20px;
+  align-self: flex-start;
+}
+
+.menu-icon {
+  color: white;
+  font-size: 20px;
+  margin-top: 1rem;
+  margin-right: 5px;
+}
+
+.menu-section {
+  height: 5rem;
+}
+
+.menu-item {
+  color: white;
+  margin-top: -5px;
+  --ion-grid-column-padding: 5px;
+  margin-left: 0.3rem;
+  cursor: pointer;
+}
+
+.menu-search-input {
+  background: transparent;
+  border-style: solid;
+  border-color: white;
+  border-width: 2px;
+  border-radius: 12px;
+  margin-right: 10px;
+}
+
+.menu-label-selector {
+  --placeholder-color: white;
+  --placeholder-opacity: 1;
+  width: 10rem;
+  justify-content: center;
+  --background: #2d2b4e;
+  margin-top: -2px;
+}
+
+.content {
+  margin-left: 18px;
 }
 </style>

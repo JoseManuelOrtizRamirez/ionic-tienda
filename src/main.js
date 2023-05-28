@@ -23,11 +23,32 @@ import '@ionic/vue/css/display.css';
 
 /* Theme variables */
 //import './theme/variables.css';
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+import brands from "@fortawesome/fontawesome-free-brands";
+
+/* import specific icons */
+import { faHouse, faPlusCircle, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
+
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+import mitt from 'mitt';
+const emitter = mitt();
+
+/* add icons to the library */
+library.add(brands, faHouse, faPlusCircle, faSearch, faTrash)
 
 const app = createApp(App)
   .use(IonicVue)
+  .use(VueSweetalert2)
   .use(router);
-  
+
+app.config.globalProperties.emitter = emitter;
 router.isReady().then(() => {
+  app.component('font-awesome-icon', FontAwesomeIcon)
   app.mount('#app');
 });

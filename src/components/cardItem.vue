@@ -1,13 +1,13 @@
 <template>
     <ion-card class="card">
-        <img
-            src="https://images.unsplash.com/photo-1613585810030-c2ae396ce0ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" />
+        <font-awesome-icon @click="handleDelete(product.id)" class="card-icon" :icon="['fa', 'trash']" />
+        <img :src="product.imagenArchivo" />
         <ion-card-header class="card-header">
-            <ion-card-title class="card-title">Cheetos</ion-card-title>
-            <ion-card-subtitle class="card-subtitle">$16.00</ion-card-subtitle>
+            <ion-card-title class="card-title">{{ product.nombre }}</ion-card-title>
+            <ion-card-subtitle class="card-subtitle">${{ product.precio }}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content class="card-content">
-            <p class="description">Here's a small text description for the card content. Nothing more, nothing less.</p>
+            <p class="description">{{ product.descripcion }}</p>
         </ion-card-content>
     </ion-card>
 </template>
@@ -18,6 +18,7 @@ import { defineComponent } from 'vue';
 import './cardItem.css'
 
 export default defineComponent({
+    props: ['product', 'handleDelete'],
     name: 'CardItem',
     components: { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonImg },
 });
